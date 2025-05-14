@@ -1,0 +1,418 @@
+-- Basic Neovim Configuration
+
+-- Plugin management with lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
+-- Plugin setup
+require("lazy").setup({
+  -- NvimTree file explorer (no fancy icons)
+  {
+    "nvim-tree/nvim-tree.lua",
+    version = "*",
+    lazy = false,
+    config = function()
+      -- NvimTree configuration
+      require("nvim-tree").setup({
+        sort_by = "case_sensitive",
+        view = {
+          width = 30,
+          side = "left",
+        },
+        renderer = {
+          add_trailing = false,
+          group_empty = true,
+          highlight_git = false,
+          full_name = false,
+          highlight_opened_files = "none",
+          highlight_modified = "none",
+          root_folder_label = ":~:s?$?/..?",
+          indent_width = 2,
+          indent_markers = {
+            enable = true,
+            inline_arrows = true,
+            icons = {
+              corner = "+",
+              edge = "|",
+              item = "|",
+              bottom = "-",
+              none = " ",
+            },
+          },
+          icons = {
+            webdev_colors = false,
+            git_placement = "before",
+            modified_placement = "after",
+            padding = " ",
+            symlink_arrow = "->",
+            show = {
+              file = false,
+              folder = false,
+              folder_arrow = true,
+              git = false,
+              modified = true,
+            },
+            glyphs = {
+              folder = {
+                arrow_closed = "+",
+                arrow_open = "-",
+                default = "D",
+                open = "O",
+                empty = "E",
+                empty_open = "EO",
+                symlink = "S",
+                symlink_open = "SO",
+              },
+            },
+          },
+        },
+        filters = {
+          dotfiles = false,
+        },
+        git = {
+          enable = false,
+        },
+      })
+    end,
+  },
+  
+  -- Telescope for fuzzy finding (dependency: ripgrep for live grep)
+  {
+    'nvim-telescope/telescope.nvim',
+    tag = '0.1.5',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    config = function()
+      require('telescope').setup({
+        defaults = {
+          file_ignore_patterns = { "node_modules", ".git" },
+          mappings = {
+            i = {
+              ["<C-j>"] = "move_selection_next",
+              ["<C-k>"] = "move_selection_previous",
+            },
+          },
+        },
+      })
+    end,
+  },
+  
+  -- Diffview.nvim for Git diff visualization with split views and colored changes
+  {
+    "sindrets/diffview.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      require("diffview").setup({
+        diff_binaries = false,
+        enhanced_diff_hl = true,
+        use_icons = false,
+        signs = {
+          fold_closed = "+",
+          fold_open = "-",
+        },
+        view = {
+          default = {
+            layout = "diff2_horizontal",
+          },
+          merge_tool = {
+            layout = "diff3_horizontal",
+          },
+        },
+        file_panel = {
+          win_config = {
+            position = "left",
+            width = 35,
+          },
+        },
+      })
+    end,
+  },
+  
+  -- Fugitive - Git commands in nvim (simpler git integration)
+  {
+    "tpope/vim-fugitive",
+    lazy = false,
+  },
+  
+  -- LSP Configuration
+  {
+    "neovim/nvim-lspconfig",
+    lazy = false,
+  },
+  
+  -- Diff view for visualizing diffs with colors
+  {
+    "sindrets/diffview.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      require("diffview").setup({
+        diff_binaries = false,
+        enhanced_diff_hl = true,
+        use_icons = false,
+        signs = {
+          fold_closed = "+",
+          fold_open = "-",
+        },
+        view = {
+          default = {
+            layout = "diff2_horizontal",
+          },
+          merge_tool = {
+            layout = "diff3_horizontal",
+          },
+        },
+        file_panel = {
+          win_config = {
+            position = "left",
+            width = 35,
+          },
+        },
+      })
+    end,
+  },
+})
+
+-- General Settings
+vim.opt.number = true                -- Show line numbers
+vim.opt.relativenumber = true        -- Show relative line numbers
+vim.opt.tabstop = 2                  -- Number of spaces tabs count for
+vim.opt.shiftwidth = 2               -- Size of an indent
+vim.opt.expandtab = true             -- Use spaces instead of tabs
+vim.opt.smartindent = true           -- Insert indents automatically
+vim.opt.wrap = false                 -- Don't wrap lines
+vim.opt.ignorecase = true            -- Ignore case when searching
+vim.opt.smartcase = true             -- Don't ignore case with capitals
+vim.opt.termguicolors = true         -- Full color support (required for icons)
+vim.opt.mouse = 'a'                  -- Enable mouse support
+vim.opt.clipboard = 'unnamedplus'    -- Use system clipboard
+vim.opt.completeopt = 'menuone,noselect'  -- Better completion experience
+vim.opt.updatetime = 250             -- Decrease update time
+vim.opt.timeoutlen = 300             -- Decrease timeout length
+vim.opt.scrolloff = 8                -- Lines of context
+vim.opt.sidescrolloff = 8            -- Columns of context
+vim.opt.splitbelow = true            -- Put new windows below current
+vim.opt.splitright = true            -- Put new windows right of current
+vim.opt.showmode = false             -- Don't show mode since we have a statusline
+vim.opt.backup = false               -- No backup files
+vim.opt.writebackup = false          -- No backup files
+vim.opt.swapfile = false             -- No swap files
+vim.opt.undofile = true              -- Persistent undo
+vim.opt.hlsearch = true              -- Highlight search results
+vim.opt.incsearch = true             -- Incremental search
+vim.opt.signcolumn = 'yes'           -- Always show the signcolumn
+vim.opt.cursorline = true            -- Highlight current line
+
+-- Keymappings
+vim.g.mapleader = ' '                -- Set leader key to space
+
+-- Mappings for normal mode
+vim.keymap.set('n', '<leader>w', function()
+  local relative_path = vim.fn.fnamemodify(vim.fn.expand('%'), ':.')
+  vim.fn.setreg('+', relative_path)
+  print('Copied to clipboard: ' .. relative_path)
+end, { desc = 'Copy relative file path to clipboard' })
+vim.keymap.set('n', '<leader>q', '<cmd>quit<cr>', { desc = 'Quit' })
+vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeToggle<cr>', { desc = 'Toggle File Explorer' })
+vim.keymap.set('n', '<C-f>', '<cmd>Telescope live_grep<cr>', { desc = 'Search in all files (ripgrep)' })
+vim.keymap.set('n', '<C-p>', '<cmd>Telescope find_files<cr>', { desc = 'Find files by name' })
+
+-- Git diff view keymaps
+-- Global variable to track diffview state
+vim.g.diffview_is_open = false
+
+vim.keymap.set('n', '<leader>g', function()
+  -- Toggle DiffView open/close based on global state variable
+  if vim.g.diffview_is_open then
+    vim.cmd("DiffviewClose")
+    vim.g.diffview_is_open = false
+  else
+    vim.cmd("DiffviewOpen")
+    vim.g.diffview_is_open = true
+  end
+end, { desc = 'Toggle Git diff view (Space+g)' })
+vim.keymap.set('n', '<leader>gh', '<cmd>DiffviewFileHistory<cr>', { desc = 'View file history' })
+vim.keymap.set('n', '<leader>gf', '<cmd>DiffviewFileHistory %<cr>', { desc = 'View current file history' })
+
+-- Fix for DiffView requiring multiple :q commands
+-- Create a simpler solution by adding a user command that overrides :q in diffview
+vim.api.nvim_create_augroup("DiffviewCustom", { clear = true })
+
+-- Listen for DiffviewClose command to update our state
+vim.api.nvim_create_autocmd("User", {
+  group = "DiffviewCustom",
+  pattern = "DiffviewClose",
+  callback = function()
+    vim.g.diffview_is_open = false
+  end,
+})
+
+-- Listen for DiffviewOpen command to update our state
+vim.api.nvim_create_autocmd("User", {
+  group = "DiffviewCustom",
+  pattern = "DiffviewOpened",
+  callback = function()
+    vim.g.diffview_is_open = true
+  end,
+})
+
+-- Create custom :q command for DiffView buffers
+vim.api.nvim_create_user_command("DiffviewCloseWithQ", function()
+  -- If we're in a diffview buffer, close the whole diffview
+  local bufname = vim.fn.bufname()
+  local filetype = vim.bo.filetype
+  if bufname:match("diffview://") or filetype:match("^Diffview") then
+    vim.cmd("DiffviewClose")
+    -- Update our state variable
+    vim.g.diffview_is_open = false
+  else
+    -- Otherwise, normal :q behavior
+    vim.cmd("quit")
+  end
+end, {})
+
+-- Override q mapping in diffview buffers
+vim.api.nvim_create_autocmd({"FileType", "BufEnter"}, {
+  group = "DiffviewCustom",
+  callback = function()
+    local bufname = vim.fn.bufname()
+    local filetype = vim.bo.filetype
+    
+    if bufname:match("diffview://") or filetype:match("^Diffview") then
+      -- Map 'q' to close diffview
+      vim.keymap.set("n", "q", function()
+        vim.cmd("DiffviewClose")
+        vim.g.diffview_is_open = false
+      end, {buffer = true})
+      
+      -- Override quit command in this buffer
+      vim.cmd("cnoreabbrev <buffer> q DiffviewCloseWithQ")
+      vim.cmd("cnoreabbrev <buffer> quit DiffviewCloseWithQ")
+    end
+  end,
+})
+
+-- Set bright diff colors like in the example
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = "DiffviewCustom",
+  callback = function()
+    -- Very bright red for deleted lines
+    vim.api.nvim_set_hl(0, "DiffDelete", { bg = "#ff0000", fg = "#ffffff", bold = true })
+    -- Very bright green for added lines
+    vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#00ff00", fg = "#000000", bold = true })
+    -- Bright blue for changed text
+    vim.api.nvim_set_hl(0, "DiffChange", { bg = "#0000ff", fg = "#ffffff", bold = true })
+    -- Bright magenta for changed text within a line
+    vim.api.nvim_set_hl(0, "DiffText", { bg = "#ff00ff", fg = "#ffffff", bold = true })
+    
+    -- Make sure these are applied to diffview's specific highlights too
+    vim.api.nvim_set_hl(0, "DiffviewDiffDelete", { link = "DiffDelete" })
+    vim.api.nvim_set_hl(0, "DiffviewDiffAdd", { link = "DiffAdd" })
+    vim.api.nvim_set_hl(0, "DiffviewDiffChange", { link = "DiffChange" })
+    vim.api.nvim_set_hl(0, "DiffviewDiffText", { link = "DiffText" })
+  end,
+})
+
+-- Trigger the colorscheme event to apply the highlights immediately
+vim.cmd("doautocmd ColorScheme")
+
+-- Multiple mappings for Ctrl+Shift+P to increase compatibility across terminals
+vim.keymap.set('n', '<C-S-p>', '<cmd>Telescope find_files<cr>', { desc = 'Find files by name (CS-P)' })
+vim.keymap.set('n', '<F25>', '<cmd>Telescope find_files<cr>', { desc = 'Find files by name (F25 for some terminals)' }) 
+vim.keymap.set('n', '<F13>', '<cmd>Telescope find_files<cr>', { desc = 'Find files by name (F13 for some terminals)' })
+
+-- Better window navigation
+vim.keymap.set('n', '<C-h>', '<C-w>h', { desc = 'Move to left window' })
+vim.keymap.set('n', '<C-j>', '<C-w>j', { desc = 'Move to below window' })
+vim.keymap.set('n', '<C-k>', '<C-w>k', { desc = 'Move to above window' })
+vim.keymap.set('n', '<C-l>', '<C-w>l', { desc = 'Move to right window' })
+
+-- Resize windows with arrows
+vim.keymap.set('n', '<C-Up>', '<cmd>resize +2<cr>', { desc = 'Increase window height' })
+vim.keymap.set('n', '<C-Down>', '<cmd>resize -2<cr>', { desc = 'Decrease window height' })
+vim.keymap.set('n', '<C-Left>', '<cmd>vertical resize -2<cr>', { desc = 'Decrease window width' })
+vim.keymap.set('n', '<C-Right>', '<cmd>vertical resize +2<cr>', { desc = 'Increase window width' })
+
+-- Navigate buffers
+vim.keymap.set('n', '<S-l>', '<cmd>bnext<cr>', { desc = 'Next buffer' })
+vim.keymap.set('n', '<S-h>', '<cmd>bprevious<cr>', { desc = 'Previous buffer' })
+
+-- LSP navigation
+vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = 'Go to definition' })
+
+-- Stay in indent mode
+vim.keymap.set('v', '<', '<gv', { desc = 'Indent left' })
+vim.keymap.set('v', '>', '>gv', { desc = 'Indent right' })
+
+-- Move text up and down
+vim.keymap.set('v', '<A-j>', ":m '>+1<cr>gv=gv", { desc = 'Move text down' })
+vim.keymap.set('v', '<A-k>', ":m '<-2<cr>gv=gv", { desc = 'Move text up' })
+
+-- Theme
+vim.cmd('colorscheme default')       -- Default colorscheme
+vim.opt.background = 'dark'          -- Dark background
+vim.api.nvim_set_hl(0, "Normal", { bg = "black" }) -- Set black background
+
+-- LSP Configuration
+local lspconfig = require('lspconfig')
+
+-- Setup common language servers
+-- Lua LSP setup
+lspconfig.lua_ls.setup {
+  settings = {
+    Lua = {
+      runtime = {
+        version = 'LuaJIT',
+      },
+      diagnostics = {
+        globals = {'vim'},
+      },
+      workspace = {
+        library = vim.api.nvim_get_runtime_file("", true),
+        checkThirdParty = false,
+      },
+      telemetry = {
+        enable = false,
+      },
+    },
+  },
+}
+
+-- Python LSP setup (pyright)
+lspconfig.pyright.setup{}
+
+-- JavaScript/TypeScript LSP setup (typescript-language-server)
+lspconfig.typescript.setup{}
+
+-- Basic C/C++ setup (clangd)
+lspconfig.clangd.setup{}
+
+-- Global LSP keybindings
+vim.keymap.set('n', 'K', vim.lsp.buf.hover, { desc = 'Show hover documentation' })
+vim.keymap.set('n', '<leader>lr', vim.lsp.buf.rename, { desc = 'LSP rename' })
+vim.keymap.set('n', '<leader>la', vim.lsp.buf.code_action, { desc = 'LSP code action' })
+
+-- Remove duplicate setting as it's set above in General Settings
+
+-- Debug key codes - Uncomment to view keycodes in real-time
+-- vim.keymap.set('n', '<leader>k', function()
+--   local function getcharstr()
+--     local c = vim.fn.getchar()
+--     if type(c) == "number" then
+--       return vim.fn.nr2char(c)
+--     end
+--     return c
+--   end
+--   
+--   local char = getcharstr()
+--   local byte = string.byte(char)
+--   vim.api.nvim_echo({{"Pressed: '" .. char .. "' (ASCII: " .. byte .. ")"}, {""}}, false, {})
+-- end, { desc = 'Debug keycodes (press a key after)' })
