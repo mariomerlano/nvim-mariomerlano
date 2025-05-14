@@ -1,6 +1,6 @@
 # nvim-mariomerlano
 
-A minimal yet powerful Neovim configuration with black background, zero distractions.
+A simple yet powerful Neovim configuration with black background, zero distractions.
 
 ## Requirements
 
