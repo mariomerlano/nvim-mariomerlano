@@ -451,7 +451,7 @@ lspconfig.pyright.setup{
 }
 
 -- JavaScript/TypeScript LSP setup (typescript-language-server)
-lspconfig.tsserver.setup{
+lspconfig.ts_ls.setup{
   capabilities = capabilities,
   settings = {
     typescript = {
