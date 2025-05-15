@@ -56,6 +56,7 @@ LSP & Code:
     K               Show documentation
     Space+LR        Rename symbol
     Space+LA        Code action
+    Ctrl+/          Toggle comment (works in all languages)
 
 Autocompletion:
     Tab             Select next completion item

@@ -206,6 +206,21 @@ require("lazy").setup({
     end,
   },
   
+  -- Comment.nvim for smart code commenting
+  {
+    'numToStr/Comment.nvim',
+    opts = {
+      -- Add Ctrl+/ mappings
+      toggler = {
+        line = '<C-_>',  -- Ctrl+/ for line comment toggle
+      },
+      opleader = {
+        line = '<C-_>',  -- Ctrl+/ in visual mode
+      },
+    },
+    lazy = false,
+  },
+  
   -- Diff view for visualizing diffs with colors
   {
     "sindrets/diffview.nvim",
