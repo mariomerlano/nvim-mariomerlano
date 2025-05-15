@@ -41,3 +41,4 @@ luac.out
 
 # Additional
 *.md
+lazy-lock.json
