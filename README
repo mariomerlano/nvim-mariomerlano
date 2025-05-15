@@ -1,73 +1,88 @@
-# nvim-mariomerlano
+NVIM-MARIOMERLANO
+===============
 
-A simple yet powerful Neovim configuration with black background, zero distractions.
+Author: Mario Merlano
+License: MIT
 
-## Requirements
+DESCRIPTION
+-----------
+Simple Neovim configuration.
 
-- Neovim >= 0.8.0
-- Git (plugin management)
-- Ripgrep (telescope grep)
-- LSP servers: 
+REQUIREMENTS
+-----------
+* Neovim >= 0.8.0
+* Git (plugin management)
+* Ripgrep (for telescope grep)
+* LSP servers:
   - lua_ls
   - pyright
-  - tsserver (`npm i -g typescript-language-server`)
+  - tsserver (npm i -g typescript-language-server)
   - clangd
 
-## Setup
-```bash
-ln -s ~/repos/nvim-mariomerlano/ ~/.config/nvim
-```
+INSTALLATION
+-----------
+Link to your Neovim config directory:
 
-## Features
+    $ ln -s ~/repos/nvim-mariomerlano ~/.config/nvim
 
-- File explorer (NvimTree) 
-- Fuzzy finder (Telescope)
-- Git integration (Fugitive, Diffview)
-- LSP support with minimal config
-- Smart autocompletion for TypeScript/JavaScript
-- No fancy icons, clean terminal-friendly UI
+KEYBOARD SHORTCUTS
+----------------
+General:
+    Space           Leader key
+    Space+Q         Quit
+    Space+W         Copy file path
+    Space+E         Toggle file explorer
 
-## Key Shortcuts
+Navigation:
+    Ctrl+H          Move to left window
+    Ctrl+J          Move to window below
+    Ctrl+K          Move to window above
+    Ctrl+L          Move to right window
+    Ctrl+arrows     Resize windows
+    Shift+H         Previous buffer
+    Shift+L         Next buffer
 
-### General
-- `Space` - Leader key
-- `Space+q` - Quit
-- `Space+w` - Copy file path
+Files & Search:
+    Ctrl+P          Find files
+    Ctrl+F          Search in files (requires ripgrep)
 
-### Window Navigation
-- `Ctrl+h/j/k/l` - Navigate windows (left/down/up/right)
-- `Ctrl+arrows` - Resize windows
+Git:
+    Space+G         Toggle diff view
+    Space+GH        View file history
+    Space+GF        View current file history
 
-### Files
-- `Space+e` - Toggle file explorer
-- `Ctrl+p` - Find files
-- `Ctrl+f` - Search in files
+LSP & Code:
+    GD              Go to definition
+    K               Show documentation
+    Space+LR        Rename symbol
+    Space+LA        Code action
 
-### Buffer Navigation
-- `Shift+h` - Previous buffer
-- `Shift+l` - Next buffer
+Autocompletion:
+    Tab             Select next completion item
+    Shift+Tab       Select previous item
+    Enter           Confirm selection
+    Ctrl+Space      Trigger completion manually
 
-### Git
-- `Space+g` - Toggle diff view
-- `Space+gh` - View file history
-- `Space+gf` - View current file history
+Visual Mode:
+    <               Indent left (stays in visual mode)
+    >               Indent right (stays in visual mode)
+    Alt+J           Move selected text down
+    Alt+K           Move selected text up
 
-### LSP
-- `gd` - Go to definition
-- `K` - Show documentation
-- `Space+lr` - Rename symbol
-- `Space+la` - Code action
+FEATURES
+-------
+* File explorer (NvimTree)
+* Fuzzy finding (Telescope)
+* Git integration (Fugitive, Diffview)
+* LSP support with minimal configuration
+* TypeScript autocompletion with tab selection
+* No fancy icons, clean terminal-friendly UI
 
-### Autocompletion
-- `Tab` - Select next item in completion menu
-- `Shift+Tab` - Select previous item in completion menu
-- `Enter` - Confirm selection
-- `Ctrl+Space` - Manually trigger completion
+TROUBLESHOOTING
+--------------
+1. Problem: TypeScript LSP not working
+   Solution: Make sure typescript-language-server is installed:
+             $ npm i -g typescript-language-server typescript
 
-### Visual Mode
-- `<` / `>` - Indent left/right (stays in visual mode)
-- `Alt+j/k` - Move selected text down/up
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file
+2. Problem: Missing LSP diagnostics
+   Solution: Install the necessary language servers for your project
