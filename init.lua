@@ -149,6 +149,63 @@ require("lazy").setup({
     lazy = false,
   },
   
+  -- Autocompletion
+  {
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp", -- LSP source for nvim-cmp
+      "hrsh7th/cmp-buffer",   -- Buffer source for completions
+      "hrsh7th/cmp-path",     -- Path source for completions
+      "L3MON4D3/LuaSnip",     -- Snippets engine
+    },
+    config = function()
+      local cmp = require('cmp')
+      local luasnip = require('luasnip')
+
+      cmp.setup({
+        snippet = {
+          expand = function(args)
+            luasnip.lsp_expand(args.body)
+          end,
+        },
+        mapping = cmp.mapping.preset.insert({
+          -- Tab to select an option
+          ['<Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item()
+            else
+              fallback()
+            end
+          end, { 'i', 's' }),
+          -- Shift+Tab to select previous option
+          ['<S-Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
+            else
+              fallback()
+            end
+          end, { 'i', 's' }),
+          -- Enter to confirm selection
+          ['<CR>'] = cmp.mapping.confirm({ select = true }),
+          -- Ctrl+Space to trigger completion
+          ['<C-Space>'] = cmp.mapping.complete(),
+        }),
+        sources = cmp.config.sources({
+          { name = 'nvim_lsp' },
+          { name = 'luasnip' },
+          { name = 'buffer' },
+          { name = 'path' },
+        }),
+        completion = {
+          autocomplete = {
+            require('cmp.types').cmp.TriggerEvent.TextChanged,
+          },
+          completeopt = 'menu,menuone,noselect',
+        },
+      })
+    end,
+  },
+  
   -- Diff view for visualizing diffs with colors
   {
     "sindrets/diffview.nvim",
@@ -363,10 +420,12 @@ vim.api.nvim_set_hl(0, "Normal", { bg = "black" }) -- Set black background
 
 -- LSP Configuration
 local lspconfig = require('lspconfig')
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 -- Setup common language servers
 -- Lua LSP setup
 lspconfig.lua_ls.setup {
+  capabilities = capabilities,
   settings = {
     Lua = {
       runtime = {
@@ -387,13 +446,43 @@ lspconfig.lua_ls.setup {
 }
 
 -- Python LSP setup (pyright)
-lspconfig.pyright.setup{}
+lspconfig.pyright.setup{
+  capabilities = capabilities,
+}
 
 -- JavaScript/TypeScript LSP setup (typescript-language-server)
-lspconfig.tsserver.setup{}
+lspconfig.tsserver.setup{
+  capabilities = capabilities,
+  settings = {
+    typescript = {
+      inlayHints = {
+        includeInlayParameterNameHints = 'all',
+        includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+        includeInlayFunctionParameterTypeHints = true,
+        includeInlayVariableTypeHints = true,
+        includeInlayPropertyDeclarationTypeHints = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayEnumMemberValueHints = true,
+      },
+    },
+    javascript = {
+      inlayHints = {
+        includeInlayParameterNameHints = 'all',
+        includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+        includeInlayFunctionParameterTypeHints = true,
+        includeInlayVariableTypeHints = true,
+        includeInlayPropertyDeclarationTypeHints = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayEnumMemberValueHints = true,
+      },
+    },
+  },
+}
 
 -- Basic C/C++ setup (clangd)
-lspconfig.clangd.setup{}
+lspconfig.clangd.setup{
+  capabilities = capabilities,
+}
 
 -- Global LSP keybindings
 vim.keymap.set('n', 'K', vim.lsp.buf.hover, { desc = 'Show hover documentation' })

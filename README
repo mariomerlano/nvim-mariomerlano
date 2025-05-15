@@ -24,6 +24,7 @@ ln -s ~/repos/nvim-mariomerlano/ ~/.config/nvim
 - Fuzzy finder (Telescope)
 - Git integration (Fugitive, Diffview)
 - LSP support with minimal config
+- Smart autocompletion for TypeScript/JavaScript
 - No fancy icons, clean terminal-friendly UI
 
 ## Key Shortcuts
@@ -56,6 +57,12 @@ ln -s ~/repos/nvim-mariomerlano/ ~/.config/nvim
 - `K` - Show documentation
 - `Space+lr` - Rename symbol
 - `Space+la` - Code action
+
+### Autocompletion
+- `Tab` - Select next item in completion menu
+- `Shift+Tab` - Select previous item in completion menu
+- `Enter` - Confirm selection
+- `Ctrl+Space` - Manually trigger completion
 
 ### Visual Mode
 - `<` / `>` - Indent left/right (stays in visual mode)
