@@ -390,7 +390,7 @@ lspconfig.lua_ls.setup {
 lspconfig.pyright.setup{}
 
 -- JavaScript/TypeScript LSP setup (typescript-language-server)
-lspconfig.typescript.setup{}
+lspconfig.tsserver.setup{}
 
 -- Basic C/C++ setup (clangd)
 lspconfig.clangd.setup{}
