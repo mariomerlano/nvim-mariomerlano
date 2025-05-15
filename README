@@ -16,7 +16,7 @@ REQUIREMENTS
 * LSP servers:
   - lua_ls
   - pyright
-  - tsserver (npm i -g typescript-language-server)
+  - ts_ls (npm i -g typescript-language-server)
   - clangd
 
 INSTALLATION
@@ -69,6 +69,11 @@ Visual Mode:
     >               Indent right (stays in visual mode)
     Alt+J           Move selected text down
     Alt+K           Move selected text up
+    Ctrl+C          Copy selection to clipboard
+
+Mouse:
+    Mouse selection  Select text with mouse
+    Ctrl+C          Copy selected text
 
 FEATURES
 -------
@@ -77,6 +82,7 @@ FEATURES
 * Git integration (Fugitive, Diffview)
 * LSP support with minimal configuration
 * TypeScript autocompletion with tab selection
+* Mouse selection and copying with Ctrl+C
 * No fancy icons, clean terminal-friendly UI
 
 TROUBLESHOOTING
@@ -87,3 +93,6 @@ TROUBLESHOOTING
 
 2. Problem: Missing LSP diagnostics
    Solution: Install the necessary language servers for your project
+   
+3. Problem: Mouse selection or copy not working
+   Solution: Make sure you're using a terminal that supports mouse events

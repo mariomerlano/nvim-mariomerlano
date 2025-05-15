@@ -264,8 +264,16 @@ vim.opt.wrap = false                 -- Don't wrap lines
 vim.opt.ignorecase = true            -- Ignore case when searching
 vim.opt.smartcase = true             -- Don't ignore case with capitals
 vim.opt.termguicolors = true         -- Full color support (required for icons)
-vim.opt.mouse = 'a'                  -- Enable mouse support
+vim.opt.mouse = 'a'                  -- Enable mouse support for all modes
 vim.opt.clipboard = 'unnamedplus'    -- Use system clipboard
+vim.opt.mousemoveevent = true        -- Enable mouse move events
+
+-- Mouse selection and copy settings
+vim.keymap.set('v', '<C-c>', '"+y', { desc = 'Copy selection to clipboard' })  -- Explicit Ctrl+C in visual mode
+vim.keymap.set('n', '<C-c>', 'vy', { desc = 'Copy current selection' })       -- Ctrl+C in normal mode
+vim.opt.mousemodel = 'extend'        -- Allow selecting text with Shift+mouse
+vim.opt.selectmode = 'mouse,key'     -- Enter select mode when using mouse or Shift+arrows
+
 vim.opt.completeopt = 'menuone,noselect'  -- Better completion experience
 vim.opt.updatetime = 250             -- Decrease update time
 vim.opt.timeoutlen = 300             -- Decrease timeout length
