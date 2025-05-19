@@ -99,6 +99,9 @@ require("lazy").setup({
             i = {
               ["<C-j>"] = "move_selection_next",
               ["<C-k>"] = "move_selection_previous",
+              ["<C-v>"] = function()
+                vim.api.nvim_feedkeys(vim.fn.getreg("+"), "i", true)
+              end,
             },
           },
         },

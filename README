@@ -45,6 +45,8 @@ Navigation:
 Files & Search:
     Ctrl+P          Find files
     Ctrl+F          Search in files (requires ripgrep)
+    Ctrl+V          Paste text in search field
+    Ctrl+J/K        Navigate search results
 
 Git:
     Space+G         Toggle diff view
@@ -78,7 +80,7 @@ Mouse:
 FEATURES
 -------
 * File explorer (NvimTree)
-* Fuzzy finding (Telescope)
+* Fuzzy finding (Telescope) with paste support
 * Git integration (Fugitive, Diffview)
 * LSP support with minimal configuration
 * TypeScript autocompletion with tab selection
