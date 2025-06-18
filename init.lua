@@ -94,7 +94,22 @@ require("lazy").setup({
     config = function()
       require('telescope').setup({
         defaults = {
-          file_ignore_patterns = { "node_modules", ".git" },
+          file_ignore_patterns = { 
+            ".git/",
+            ".next/",
+          },
+          vimgrep_arguments = {
+            "rg",
+            "--color=never",
+            "--no-heading",
+            "--with-filename",
+            "--line-number",
+            "--column",
+            "--smart-case",
+            "--hidden",
+            "--no-ignore",
+            "--glob=!.git/*",
+          },
           mappings = {
             i = {
               ["<C-j>"] = "move_selection_next",
