@@ -29,6 +29,10 @@ require("lazy").setup({
           width = 30,
           side = "left",
         },
+        update_focused_file = {
+          enable = true,
+          update_root = true,
+        },
         renderer = {
           add_trailing = false,
           group_empty = true,
