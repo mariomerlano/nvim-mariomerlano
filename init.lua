@@ -583,10 +583,57 @@ vim.api.nvim_create_user_command("SmartWriteQuit", function()
   vim.cmd("quit")
 end, {})
 
--- Override :q and :wq to use our smart quit functions
-vim.cmd("cnoreabbrev q SmartQuit")
-vim.cmd("cnoreabbrev quit SmartQuit")
-vim.cmd("cnoreabbrev wq SmartWriteQuit")
+-- Custom :q! command to force quit file and tree together
+vim.api.nvim_create_user_command("SmartForceQuit", function()
+  -- Check if NvimTree is open by looking for its buffer
+  local nvim_tree_buf = nil
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    local buf_name = vim.api.nvim_buf_get_name(buf)
+    if buf_name:match("NvimTree") then
+      nvim_tree_buf = buf
+      break
+    end
+  end
+  
+  if nvim_tree_buf then
+    -- Close NvimTree first
+    local nvim_tree = require("nvim-tree.api")
+    nvim_tree.tree.close()
+  end
+  
+  -- Then force quit the current buffer/window
+  vim.cmd("quit!")
+end, {})
+
+-- Create autocmd to intercept quit commands
+vim.api.nvim_create_autocmd("CmdlineEnter", {
+  pattern = ":",
+  callback = function()
+    -- Map q to SmartQuit only in command mode
+    vim.keymap.set('c', '<CR>', function()
+      local cmd = vim.fn.getcmdline()
+      if cmd == 'q' then
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-u>SmartQuit<CR>', true, false, true), 'n', true)
+      elseif cmd == 'quit' then
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-u>SmartQuit<CR>', true, false, true), 'n', true)
+      elseif cmd == 'wq' then
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-u>SmartWriteQuit<CR>', true, false, true), 'n', true)
+      elseif cmd == 'q!' then
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-u>SmartForceQuit<CR>', true, false, true), 'n', true)
+      else
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<CR>', true, false, true), 'n', true)
+      end
+    end, { buffer = true })
+  end,
+})
+
+vim.api.nvim_create_autocmd("CmdlineLeave", {
+  pattern = ":",
+  callback = function()
+    -- Unmap when leaving command mode
+    pcall(vim.keymap.del, 'c', '<CR>')
+  end,
+})
 
 -- Debug key codes - Uncomment to view keycodes in real-time
 -- vim.keymap.set('n', '<leader>k', function()
