@@ -536,6 +536,58 @@ vim.keymap.set('n', '<leader>la', vim.lsp.buf.code_action, { desc = 'LSP code ac
 
 -- Remove duplicate setting as it's set above in General Settings
 
+-- Custom :q command to close file and tree together
+vim.api.nvim_create_user_command("SmartQuit", function()
+  -- Check if NvimTree is open by looking for its buffer
+  local nvim_tree_buf = nil
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    local buf_name = vim.api.nvim_buf_get_name(buf)
+    if buf_name:match("NvimTree") then
+      nvim_tree_buf = buf
+      break
+    end
+  end
+  
+  if nvim_tree_buf then
+    -- Close NvimTree first
+    local nvim_tree = require("nvim-tree.api")
+    nvim_tree.tree.close()
+  end
+  
+  -- Then quit the current buffer/window
+  vim.cmd("quit")
+end, {})
+
+-- Custom :wq command to save, then close file and tree together
+vim.api.nvim_create_user_command("SmartWriteQuit", function()
+  -- Save the current file first
+  vim.cmd("write")
+  
+  -- Check if NvimTree is open by looking for its buffer
+  local nvim_tree_buf = nil
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    local buf_name = vim.api.nvim_buf_get_name(buf)
+    if buf_name:match("NvimTree") then
+      nvim_tree_buf = buf
+      break
+    end
+  end
+  
+  if nvim_tree_buf then
+    -- Close NvimTree first
+    local nvim_tree = require("nvim-tree.api")
+    nvim_tree.tree.close()
+  end
+  
+  -- Then quit the current buffer/window
+  vim.cmd("quit")
+end, {})
+
+-- Override :q and :wq to use our smart quit functions
+vim.cmd("cnoreabbrev q SmartQuit")
+vim.cmd("cnoreabbrev quit SmartQuit")
+vim.cmd("cnoreabbrev wq SmartWriteQuit")
+
 -- Debug key codes - Uncomment to view keycodes in real-time
 -- vim.keymap.set('n', '<leader>k', function()
 --   local function getcharstr()
