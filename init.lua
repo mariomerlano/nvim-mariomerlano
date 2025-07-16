@@ -449,6 +449,7 @@ vim.keymap.set('n', '<S-h>', '<cmd>bprevious<cr>', { desc = 'Previous buffer' })
 
 -- LSP navigation
 vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = 'Go to definition' })
+vim.keymap.set('n', 'gr', vim.lsp.buf.references, { desc = 'Find references' })
 
 -- Stay in indent mode
 vim.keymap.set('v', '<', '<gv', { desc = 'Indent left' })
