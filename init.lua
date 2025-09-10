@@ -228,6 +228,12 @@ require("lazy").setup({
     end,
   },
   
+  -- Better syntax highlighting without Treesitter
+  {
+    "bfrg/vim-cpp-modern",
+    ft = { "c", "cpp", "h", "hpp" },
+  },
+  
   -- Comment.nvim for smart code commenting
   {
     'numToStr/Comment.nvim',
@@ -463,6 +469,73 @@ vim.keymap.set('v', '<A-k>', ":m '<-2<cr>gv=gv", { desc = 'Move text up' })
 vim.cmd('colorscheme default')       -- Default colorscheme
 vim.opt.background = 'dark'          -- Dark background
 vim.api.nvim_set_hl(0, "Normal", { bg = "black" }) -- Set black background
+
+-- Enhanced C/C++ syntax highlighting (works with vim-cpp-modern)
+vim.api.nvim_create_autocmd({"BufEnter", "ColorScheme", "FileType"}, {
+  pattern = {"*.c", "*.cpp", "*.h", "*.hpp", "c", "cpp"},
+  callback = function()
+    -- C Keywords (int, void, while, return, etc.)
+    vim.api.nvim_set_hl(0, "cType", { fg = "#8be9fd", bold = true })
+    vim.api.nvim_set_hl(0, "cStorageClass", { fg = "#ff79c6", bold = true })
+    vim.api.nvim_set_hl(0, "cStatement", { fg = "#ff79c6", bold = true })
+    vim.api.nvim_set_hl(0, "cConditional", { fg = "#ff79c6", bold = true })
+    vim.api.nvim_set_hl(0, "cRepeat", { fg = "#ff79c6", bold = true })
+    vim.api.nvim_set_hl(0, "cLabel", { fg = "#ff79c6", bold = true })
+    
+    -- Functions
+    vim.api.nvim_set_hl(0, "Function", { fg = "#50fa7b", bold = true })
+    vim.api.nvim_set_hl(0, "cUserFunction", { fg = "#50fa7b" })
+    
+    -- Preprocessor directives (#include, #define, etc.)
+    vim.api.nvim_set_hl(0, "PreProc", { fg = "#f1fa8c", bold = true })
+    vim.api.nvim_set_hl(0, "cPreProc", { fg = "#f1fa8c", bold = true })
+    vim.api.nvim_set_hl(0, "cDefine", { fg = "#f1fa8c", bold = true })
+    vim.api.nvim_set_hl(0, "cInclude", { fg = "#f1fa8c", bold = true })
+    vim.api.nvim_set_hl(0, "Include", { fg = "#f1fa8c", bold = true })
+    vim.api.nvim_set_hl(0, "Define", { fg = "#f1fa8c", bold = true })
+    
+    -- Constants and numbers
+    vim.api.nvim_set_hl(0, "Constant", { fg = "#bd93f9" })
+    vim.api.nvim_set_hl(0, "cConstant", { fg = "#bd93f9" })
+    vim.api.nvim_set_hl(0, "cNumber", { fg = "#bd93f9" })
+    vim.api.nvim_set_hl(0, "Number", { fg = "#bd93f9" })
+    vim.api.nvim_set_hl(0, "Float", { fg = "#bd93f9" })
+    
+    -- Strings
+    vim.api.nvim_set_hl(0, "String", { fg = "#f1fa8c" })
+    vim.api.nvim_set_hl(0, "cString", { fg = "#f1fa8c" })
+    vim.api.nvim_set_hl(0, "Character", { fg = "#f1fa8c" })
+    
+    -- Comments
+    vim.api.nvim_set_hl(0, "Comment", { fg = "#6272a4", italic = true })
+    vim.api.nvim_set_hl(0, "cComment", { fg = "#6272a4", italic = true })
+    vim.api.nvim_set_hl(0, "cCommentL", { fg = "#6272a4", italic = true })
+    
+    -- Operators
+    vim.api.nvim_set_hl(0, "Operator", { fg = "#ff79c6" })
+    vim.api.nvim_set_hl(0, "cOperator", { fg = "#ff79c6" })
+    
+    -- Identifiers
+    vim.api.nvim_set_hl(0, "Identifier", { fg = "#f8f8f2" })
+    
+    -- Special
+    vim.api.nvim_set_hl(0, "Special", { fg = "#ff79c6" })
+    vim.api.nvim_set_hl(0, "Delimiter", { fg = "#f8f8f2" })
+    
+    -- Keywords like return
+    vim.api.nvim_set_hl(0, "Keyword", { fg = "#ff79c6", bold = true })
+    
+    -- Structures
+    vim.api.nvim_set_hl(0, "Structure", { fg = "#8be9fd", bold = true })
+    vim.api.nvim_set_hl(0, "cStructure", { fg = "#8be9fd", bold = true })
+    
+    -- vim-cpp-modern specific highlights
+    vim.api.nvim_set_hl(0, "cppStatement", { fg = "#ff79c6", bold = true })
+    vim.api.nvim_set_hl(0, "cppAccess", { fg = "#ff79c6", bold = true })
+    vim.api.nvim_set_hl(0, "cppType", { fg = "#8be9fd", bold = true })
+    vim.api.nvim_set_hl(0, "cppModifier", { fg = "#ff79c6", bold = true })
+  end,
+})
 
 -- LSP Configuration
 local lspconfig = require('lspconfig')
