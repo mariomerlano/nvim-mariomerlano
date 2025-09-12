@@ -457,6 +457,9 @@ vim.keymap.set('n', '<S-h>', '<cmd>bprevious<cr>', { desc = 'Previous buffer' })
 vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = 'Go to definition' })
 vim.keymap.set('n', 'gr', vim.lsp.buf.references, { desc = 'Find references' })
 
+-- Clear search highlighting with Escape
+vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<cr>', { desc = 'Clear search highlighting' })
+
 -- Stay in indent mode
 vim.keymap.set('v', '<', '<gv', { desc = 'Indent left' })
 vim.keymap.set('v', '>', '>gv', { desc = 'Indent right' })
@@ -469,6 +472,11 @@ vim.keymap.set('v', '<A-k>', ":m '<-2<cr>gv=gv", { desc = 'Move text up' })
 vim.cmd('colorscheme default')       -- Default colorscheme
 vim.opt.background = 'dark'          -- Dark background
 vim.api.nvim_set_hl(0, "Normal", { bg = "black" }) -- Set black background
+
+-- Set search highlight to softer colors
+vim.api.nvim_set_hl(0, "Search", { bg = "#2a3f5f", fg = "#8be9fd" })  -- Soft dark blue background with light blue text
+vim.api.nvim_set_hl(0, "IncSearch", { bg = "#8be9fd", fg = "#000000", bold = true })  -- Strong light blue for current match
+vim.api.nvim_set_hl(0, "CurSearch", { bg = "#8be9fd", fg = "#000000", bold = true })  -- Current search item when navigating with n/N
 
 -- Enhanced C/C++ syntax highlighting (works with vim-cpp-modern)
 vim.api.nvim_create_autocmd({"BufEnter", "ColorScheme", "FileType"}, {

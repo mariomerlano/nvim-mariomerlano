@@ -47,6 +47,7 @@ Files & Search:
     Ctrl+F          Search in files (requires ripgrep)
     Ctrl+V          Paste text in search field
     Ctrl+J/K        Navigate search results
+    Esc             Clear search highlighting
 
 Git:
     Space+G         Toggle diff view
