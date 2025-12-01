@@ -225,6 +225,83 @@ require("lazy").setup({
           completeopt = 'menu,menuone,noselect',
         },
       })
+
+      -- Custom source for markdown image/link paths
+      local markdown_path_source = {}
+      markdown_path_source.new = function()
+        return setmetatable({}, { __index = markdown_path_source })
+      end
+
+      function markdown_path_source:get_trigger_characters()
+        return { '/' }
+      end
+
+      function markdown_path_source:complete(params, callback)
+        local line = params.context.cursor_before_line
+        -- Match pattern like ![...](path/ or [...](...path/
+        local path_match = line:match('%]%(([^%)]+)$')
+        if not path_match then
+          callback({ items = {}, isIncomplete = false })
+          return
+        end
+
+        -- Get the directory part of the path
+        local base_dir = vim.fn.expand('%:p:h')
+        local target_dir = base_dir .. '/' .. path_match
+
+        -- Check if directory exists
+        if vim.fn.isdirectory(target_dir) ~= 1 then
+          callback({ items = {}, isIncomplete = false })
+          return
+        end
+
+        -- Get files from directory
+        local files = vim.fn.readdir(target_dir)
+        local items = {}
+        for _, file in ipairs(files) do
+          local full_path = target_dir .. '/' .. file
+          local is_dir = vim.fn.isdirectory(full_path) == 1
+          table.insert(items, {
+            label = file,
+            kind = is_dir and 19 or 17, -- Folder or File icon
+            insertText = file,
+            sortText = (is_dir and '0' or '1') .. file, -- Folders first
+          })
+        end
+
+        callback({ items = items, isIncomplete = false })
+      end
+
+      function markdown_path_source:get_keyword_pattern()
+        return [[\k\+]]
+      end
+
+      cmp.register_source('markdown_path', markdown_path_source.new())
+
+      -- Markdown-specific completion: use custom path source
+      cmp.setup.filetype('markdown', {
+        sources = cmp.config.sources({
+          { name = 'markdown_path' },
+          { name = 'buffer' },
+        }),
+      })
+
+      -- Auto-trigger completion after typing "/" in markdown image/link context
+      vim.api.nvim_create_autocmd("InsertCharPre", {
+        pattern = "*.md",
+        callback = function()
+          if vim.v.char == '/' then
+            vim.defer_fn(function()
+              local line = vim.api.nvim_get_current_line()
+              local col = vim.api.nvim_win_get_cursor(0)[2]
+              local before_cursor = line:sub(1, col + 1)
+              if before_cursor:match('%]%([^%)]*/$') then
+                require('cmp').complete()
+              end
+            end, 10)
+          end
+        end,
+      })
     end,
   },
   
