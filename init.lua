@@ -368,6 +368,29 @@ vim.opt.smartindent = true           -- Insert indents automatically
 vim.opt.wrap = false                 -- Don't wrap lines
 vim.opt.ignorecase = true            -- Ignore case when searching
 vim.opt.smartcase = true             -- Don't ignore case with capitals
+
+-- Search ignoring accents (remediacion finds remediación)
+vim.keymap.set('n', '/', function()
+  vim.ui.input({ prompt = 'Search: ' }, function(input)
+    if input and input ~= '' then
+      -- Build pattern that matches with or without accents
+      local accent_map = {
+        ['a'] = '[aáàäâã]', ['A'] = '[AÁÀÄÂÃ]',
+        ['e'] = '[eéèëê]',  ['E'] = '[EÉÈËÊ]',
+        ['i'] = '[iíìïî]',  ['I'] = '[IÍÌÏÎ]',
+        ['o'] = '[oóòöôõ]', ['O'] = '[OÓÒÖÔÕ]',
+        ['u'] = '[uúùüû]',  ['U'] = '[UÚÙÜÛ]',
+        ['n'] = '[nñ]',     ['N'] = '[NÑ]',
+      }
+      local pattern = input:gsub('.', function(c)
+        return accent_map[c] or c
+      end)
+      vim.fn.setreg('/', '\\v' .. pattern)
+      vim.cmd('set hlsearch')
+      vim.cmd('normal! n')
+    end
+  end)
+end, { desc = 'Search ignoring accents' })
 vim.opt.termguicolors = true         -- Full color support (required for icons)
 vim.opt.mouse = 'a'                  -- Enable mouse support for all modes
 vim.opt.clipboard = 'unnamedplus'    -- Use system clipboard
@@ -419,7 +442,25 @@ vim.keymap.set('n', '<leader>w', function()
 end, { desc = 'Copy relative file path to clipboard' })
 vim.keymap.set('n', '<leader>q', '<cmd>quit<cr>', { desc = 'Quit' })
 vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeToggle<cr>', { desc = 'Toggle File Explorer' })
-vim.keymap.set('n', '<C-f>', '<cmd>Telescope live_grep<cr>', { desc = 'Search in all files (ripgrep)' })
+-- Live grep with accent-insensitive search
+vim.keymap.set('n', '<C-f>', function()
+  local accent_map = {
+    ['a'] = '[aáàäâã]', ['A'] = '[AÁÀÄÂÃ]',
+    ['e'] = '[eéèëê]',  ['E'] = '[EÉÈËÊ]',
+    ['i'] = '[iíìïî]',  ['I'] = '[IÍÌÏÎ]',
+    ['o'] = '[oóòöôõ]', ['O'] = '[OÓÒÖÔÕ]',
+    ['u'] = '[uúùüû]',  ['U'] = '[UÚÙÜÛ]',
+    ['n'] = '[nñ]',     ['N'] = '[NÑ]',
+  }
+  require('telescope.builtin').live_grep({
+    on_input_filter_cb = function(prompt)
+      local pattern = prompt:gsub('.', function(c)
+        return accent_map[c] or c
+      end)
+      return { prompt = pattern }
+    end,
+  })
+end, { desc = 'Search in all files (accent-insensitive)' })
 vim.keymap.set('n', '<C-p>', '<cmd>Telescope find_files<cr>', { desc = 'Find files by name' })
 
 -- Git diff view keymaps
