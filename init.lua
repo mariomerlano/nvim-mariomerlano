@@ -376,6 +376,18 @@ vim.opt.mousemoveevent = true        -- Enable mouse move events
 -- Mouse selection and copy settings
 vim.keymap.set('v', '<C-c>', '"+y', { desc = 'Copy selection to clipboard' })  -- Explicit Ctrl+C in visual mode
 vim.keymap.set('n', '<C-c>', 'vy', { desc = 'Copy current selection' })       -- Ctrl+C in normal mode
+
+-- Ctrl+Click to open URLs in browser
+vim.keymap.set('n', '<C-LeftMouse>', function()
+  local word = vim.fn.expand('<cWORD>')
+  -- Extract URL from the word (handles markdown links, quotes, parentheses)
+  local url = word:match('https?://[%w%-%.%_%~%:%/%?%#%[%]%@%!%$%&%\'%(%)%*%+%,%;%%=]+')
+  if url then
+    -- Clean trailing punctuation that's not part of URL
+    url = url:gsub('[%)%]%>%,%.%;%:%!%?]+$', '')
+    vim.fn.system({ 'xdg-open', url })
+  end
+end, { desc = 'Open URL under cursor in browser' })
 vim.opt.mousemodel = 'extend'        -- Allow selecting text with Shift+mouse
 vim.opt.selectmode = 'mouse,key'     -- Enter select mode when using mouse or Shift+arrows
 
