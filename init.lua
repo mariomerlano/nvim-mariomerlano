@@ -369,28 +369,35 @@ vim.opt.wrap = false                 -- Don't wrap lines
 vim.opt.ignorecase = true            -- Ignore case when searching
 vim.opt.smartcase = true             -- Don't ignore case with capitals
 
--- Search ignoring accents (remediacion finds remediación)
-vim.keymap.set('n', '/', function()
-  vim.ui.input({ prompt = 'Search: ' }, function(input)
-    if input and input ~= '' then
-      -- Build pattern that matches with or without accents
-      local accent_map = {
-        ['a'] = '[aáàäâã]', ['A'] = '[AÁÀÄÂÃ]',
-        ['e'] = '[eéèëê]',  ['E'] = '[EÉÈËÊ]',
-        ['i'] = '[iíìïî]',  ['I'] = '[IÍÌÏÎ]',
-        ['o'] = '[oóòöôõ]', ['O'] = '[OÓÒÖÔÕ]',
-        ['u'] = '[uúùüû]',  ['U'] = '[UÚÙÜÛ]',
-        ['n'] = '[nñ]',     ['N'] = '[NÑ]',
-      }
-      local pattern = input:gsub('.', function(c)
-        return accent_map[c] or c
-      end)
-      vim.fn.setreg('/', '\\v' .. pattern)
-      vim.cmd('set hlsearch')
-      vim.cmd('normal! n')
-    end
+-- Accent-insensitive search
+local accent_map = {
+  ['a'] = '[aáàäâã]', ['A'] = '[AÁÀÄÂÃ]',
+  ['e'] = '[eéèëê]',  ['E'] = '[EÉÈËÊ]',
+  ['i'] = '[iíìïî]',  ['I'] = '[IÍÌÏÎ]',
+  ['o'] = '[oóòöôõ]', ['O'] = '[OÓÒÖÔÕ]',
+  ['u'] = '[uúùüû]',  ['U'] = '[UÚÙÜÛ]',
+  ['n'] = '[nñ]',     ['N'] = '[NÑ]',
+}
+
+local function transform_pattern(input)
+  return input:gsub('.', function(c)
+    return accent_map[c] or c
   end)
-end, { desc = 'Search ignoring accents' })
+end
+
+-- Override Enter in search mode to transform the pattern
+vim.keymap.set('c', '<CR>', function()
+  local cmdtype = vim.fn.getcmdtype()
+  if cmdtype == '/' or cmdtype == '?' then
+    local input = vim.fn.getcmdline()
+    if input ~= '' then
+      local pattern = transform_pattern(input)
+      -- Replace cmdline with transformed pattern and execute
+      return '<C-u>' .. pattern .. '<CR>'
+    end
+  end
+  return '<CR>'
+end, { expr = true })
 vim.opt.termguicolors = true         -- Full color support (required for icons)
 vim.opt.mouse = 'a'                  -- Enable mouse support for all modes
 vim.opt.clipboard = 'unnamedplus'    -- Use system clipboard
