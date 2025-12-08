@@ -407,7 +407,7 @@ vim.opt.mousemoveevent = true        -- Enable mouse move events
 vim.keymap.set('v', '<C-c>', '"+y', { desc = 'Copy selection to clipboard' })  -- Explicit Ctrl+C in visual mode
 vim.keymap.set('n', '<C-c>', 'vy', { desc = 'Copy current selection' })       -- Ctrl+C in normal mode
 
--- Ctrl+Click to open URLs in browser
+-- Ctrl+Click to open URLs in browser or images in viewer
 vim.keymap.set('n', '<C-LeftMouse>', function()
   local word = vim.fn.expand('<cWORD>')
   -- Extract URL from the word (handles markdown links, quotes, parentheses)
@@ -416,8 +416,30 @@ vim.keymap.set('n', '<C-LeftMouse>', function()
     -- Clean trailing punctuation that's not part of URL
     url = url:gsub('[%)%]%>%,%.%;%:%!%?]+$', '')
     vim.fn.system({ 'xdg-open', url })
+    return
   end
-end, { desc = 'Open URL under cursor in browser' })
+
+  -- Check for image file paths
+  local path = word:match('[%w%-%.%_%/]+%.png') or
+               word:match('[%w%-%.%_%/]+%.jpg') or
+               word:match('[%w%-%.%_%/]+%.jpeg') or
+               word:match('[%w%-%.%_%/]+%.gif') or
+               word:match('[%w%-%.%_%/]+%.webp') or
+               word:match('[%w%-%.%_%/]+%.bmp')
+  if path then
+    -- Clean markdown/parentheses artifacts
+    path = path:gsub('^[%(%[%]%)]', ''):gsub('[%(%[%]%)]+$', '')
+    -- Make path absolute if relative
+    if not path:match('^/') then
+      path = vim.fn.getcwd() .. '/' .. path
+    end
+    if vim.fn.filereadable(path) == 1 then
+      vim.fn.system({ 'xdg-open', path })
+    else
+      vim.notify('Image not found: ' .. path, vim.log.levels.WARN)
+    end
+  end
+end, { desc = 'Open URL or image under cursor' })
 vim.opt.mousemodel = 'extend'        -- Allow selecting text with Shift+mouse
 vim.opt.selectmode = 'mouse,key'     -- Enter select mode when using mouse or Shift+arrows
 
