@@ -486,7 +486,7 @@ vim.keymap.set('n', '<C-f>', function()
       local pattern = prompt:gsub('.', function(c)
         return accent_map[c] or c
       end)
-      return { prompt = pattern }
+      return { prompt = prompt, regex = true, search = pattern }
     end,
   })
 end, { desc = 'Search in all files (accent-insensitive)' })
