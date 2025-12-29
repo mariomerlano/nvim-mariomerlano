@@ -392,10 +392,13 @@ vim.keymap.set('c', '<CR>', function()
     local input = vim.fn.getcmdline()
     if input ~= '' then
       local pattern = transform_pattern(input)
-      -- Set search register and execute search
-      vim.fn.setreg('/', pattern)
       vim.fn.histadd('/', input)
-      return '<C-u><CR>n'
+      -- Schedule search after exiting command mode
+      vim.schedule(function()
+        vim.fn.setreg('/', pattern)
+        vim.cmd('normal! n')
+      end)
+      return '<C-c>'
     end
   end
   return '<CR>'
