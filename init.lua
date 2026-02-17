@@ -165,10 +165,19 @@ require("lazy").setup({
     lazy = false,
   },
   
+  -- Mason: install LSP servers via :Mason
+  {
+    "williamboman/mason.nvim",
+    config = function()
+      require("mason").setup()
+    end,
+  },
+
   -- LSP Configuration
   {
     "neovim/nvim-lspconfig",
     lazy = false,
+    dependencies = { "williamboman/mason.nvim" },
   },
   
   -- Autocompletion
@@ -309,6 +318,15 @@ require("lazy").setup({
   {
     "bfrg/vim-cpp-modern",
     ft = { "c", "cpp", "h", "hpp" },
+  },
+
+  -- Enhanced Python syntax highlighting
+  {
+    "vim-python/python-syntax",
+    ft = { "python" },
+    init = function()
+      vim.g.python_highlight_all = 1
+    end,
   },
   
   -- Comment.nvim for smart code commenting
@@ -709,6 +727,60 @@ vim.api.nvim_create_autocmd({"BufEnter", "ColorScheme", "FileType"}, {
   end,
 })
 
+-- Enhanced Python syntax highlighting
+vim.api.nvim_create_autocmd({"BufEnter", "ColorScheme", "FileType"}, {
+  pattern = {"*.py", "python"},
+  callback = function()
+    -- Keywords (if, else, for, while, return, def, class, etc.)
+    vim.api.nvim_set_hl(0, "pythonStatement", { fg = "#ff79c6", bold = true })
+    vim.api.nvim_set_hl(0, "pythonConditional", { fg = "#ff79c6", bold = true })
+    vim.api.nvim_set_hl(0, "pythonRepeat", { fg = "#ff79c6", bold = true })
+    vim.api.nvim_set_hl(0, "pythonOperator", { fg = "#ff79c6", bold = true })
+    vim.api.nvim_set_hl(0, "pythonException", { fg = "#ff79c6", bold = true })
+    vim.api.nvim_set_hl(0, "pythonInclude", { fg = "#ff79c6", bold = true })
+    vim.api.nvim_set_hl(0, "pythonAsync", { fg = "#ff79c6", bold = true })
+
+    -- Functions and decorators
+    vim.api.nvim_set_hl(0, "pythonFunction", { fg = "#50fa7b", bold = true })
+    vim.api.nvim_set_hl(0, "pythonDecorator", { fg = "#50fa7b", italic = true })
+    vim.api.nvim_set_hl(0, "pythonDecoratorName", { fg = "#50fa7b", italic = true })
+
+    -- Built-in types and functions
+    vim.api.nvim_set_hl(0, "pythonBuiltin", { fg = "#8be9fd" })
+    vim.api.nvim_set_hl(0, "pythonBuiltinType", { fg = "#8be9fd", bold = true })
+    vim.api.nvim_set_hl(0, "pythonBuiltinObj", { fg = "#8be9fd" })
+    vim.api.nvim_set_hl(0, "pythonBuiltinFunc", { fg = "#8be9fd" })
+
+    -- Strings
+    vim.api.nvim_set_hl(0, "pythonString", { fg = "#f1fa8c" })
+    vim.api.nvim_set_hl(0, "pythonRawString", { fg = "#f1fa8c" })
+    vim.api.nvim_set_hl(0, "pythonFString", { fg = "#f1fa8c" })
+    vim.api.nvim_set_hl(0, "pythonQuotes", { fg = "#f1fa8c" })
+    vim.api.nvim_set_hl(0, "pythonTripleQuotes", { fg = "#f1fa8c" })
+
+    -- Numbers and constants
+    vim.api.nvim_set_hl(0, "pythonNumber", { fg = "#bd93f9" })
+    vim.api.nvim_set_hl(0, "pythonHexNumber", { fg = "#bd93f9" })
+    vim.api.nvim_set_hl(0, "pythonOctNumber", { fg = "#bd93f9" })
+    vim.api.nvim_set_hl(0, "pythonBinNumber", { fg = "#bd93f9" })
+    vim.api.nvim_set_hl(0, "pythonFloat", { fg = "#bd93f9" })
+    vim.api.nvim_set_hl(0, "pythonNone", { fg = "#bd93f9", bold = true })
+    vim.api.nvim_set_hl(0, "pythonBoolean", { fg = "#bd93f9", bold = true })
+
+    -- Comments
+    vim.api.nvim_set_hl(0, "pythonComment", { fg = "#6272a4", italic = true })
+
+    -- Self keyword
+    vim.api.nvim_set_hl(0, "pythonSelf", { fg = "#ffb86c", italic = true })
+
+    -- Class names
+    vim.api.nvim_set_hl(0, "pythonClass", { fg = "#8be9fd", bold = true })
+
+    -- Docstrings
+    vim.api.nvim_set_hl(0, "pythonDocstring", { fg = "#6272a4", italic = true })
+  end,
+})
+
 -- Enhanced Markdown syntax highlighting
 vim.api.nvim_create_autocmd({"BufEnter", "ColorScheme", "FileType"}, {
   pattern = {"*.md", "*.markdown", "markdown"},
@@ -754,39 +826,35 @@ vim.api.nvim_create_autocmd({"BufEnter", "ColorScheme", "FileType"}, {
 })
 
 -- LSP Configuration
+-- Add mason bin to PATH so lspconfig can find installed servers
+vim.env.PATH = vim.fn.stdpath("data") .. "/mason/bin:" .. vim.env.PATH
+
 local lspconfig = require('lspconfig')
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
--- Setup common language servers
 -- Lua LSP setup
-lspconfig.lua_ls.setup {
+lspconfig.lua_ls.setup({
   capabilities = capabilities,
   settings = {
     Lua = {
-      runtime = {
-        version = 'LuaJIT',
-      },
-      diagnostics = {
-        globals = {'vim'},
-      },
+      runtime = { version = 'LuaJIT' },
+      diagnostics = { globals = {'vim'} },
       workspace = {
         library = vim.api.nvim_get_runtime_file("", true),
         checkThirdParty = false,
       },
-      telemetry = {
-        enable = false,
-      },
+      telemetry = { enable = false },
     },
   },
-}
+})
 
 -- Python LSP setup (pyright)
-lspconfig.pyright.setup{
+lspconfig.pyright.setup({
   capabilities = capabilities,
-}
+})
 
--- JavaScript/TypeScript LSP setup (typescript-language-server)
-lspconfig.ts_ls.setup{
+-- JavaScript/TypeScript LSP setup
+lspconfig.ts_ls.setup({
   capabilities = capabilities,
   settings = {
     typescript = {
@@ -812,12 +880,12 @@ lspconfig.ts_ls.setup{
       },
     },
   },
-}
+})
 
--- Basic C/C++ setup (clangd)
-lspconfig.clangd.setup{
+-- C/C++ LSP setup (clangd)
+lspconfig.clangd.setup({
   capabilities = capabilities,
-}
+})
 
 -- Global LSP keybindings
 vim.keymap.set('n', 'K', vim.lsp.buf.hover, { desc = 'Show hover documentation' })
