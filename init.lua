@@ -504,6 +504,21 @@ vim.keymap.set('n', '<leader>w', function()
   print('Copied to clipboard: ' .. relative_path)
 end, { desc = 'Copy relative file path to clipboard' })
 vim.keymap.set('n', '<leader>q', '<cmd>quit<cr>', { desc = 'Quit' })
+vim.keymap.set('n', '<leader>r', function()
+  local file = vim.fn.expand('%')
+  local ft = vim.bo.filetype
+  local cmd
+  if ft == 'python' then
+    cmd = 'uv run ' .. file
+  elseif ft == 'c' then
+    local out = file:gsub('%.c$', '')
+    cmd = 'gcc ' .. file .. ' -o ' .. out .. ' && ./' .. out
+  else
+    print('No runner configured for filetype: ' .. ft)
+    return
+  end
+  vim.cmd('botright split | terminal ' .. cmd)
+end, { desc = 'Run current file (Python/C)' })
 vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeToggle<cr>', { desc = 'Toggle File Explorer' })
 -- Live grep with accent-insensitive search
 vim.keymap.set('n', '<C-f>', function()
