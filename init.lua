@@ -749,6 +749,8 @@ vim.api.nvim_create_autocmd({"BufEnter", "ColorScheme", "FileType"}, {
     vim.api.nvim_set_hl(0, "pythonOperator", { fg = "#ff79c6", bold = true })
     vim.api.nvim_set_hl(0, "pythonException", { fg = "#ff79c6", bold = true })
     vim.api.nvim_set_hl(0, "pythonInclude", { fg = "#ff79c6", bold = true })
+    vim.api.nvim_set_hl(0, "pythonImport", { fg = "#ff79c6", bold = true })
+    vim.api.nvim_set_hl(0, "Include", { fg = "#ff79c6", bold = true })
     vim.api.nvim_set_hl(0, "pythonAsync", { fg = "#ff79c6", bold = true })
 
     -- Functions and decorators
