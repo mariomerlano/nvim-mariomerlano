@@ -505,6 +505,18 @@ vim.keymap.set('n', '<leader>w', function()
 end, { desc = 'Copy relative file path to clipboard' })
 vim.keymap.set('n', '<leader>q', '<cmd>quit<cr>', { desc = 'Quit' })
 vim.keymap.set('n', '<leader>r', function()
+  -- If a terminal buffer is open, kill and close it
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.bo[buf].buftype == 'terminal' then
+      local win = vim.fn.bufwinid(buf)
+      if win ~= -1 then
+        vim.api.nvim_win_close(win, true)
+      end
+      vim.api.nvim_buf_delete(buf, { force = true })
+      return
+    end
+  end
+  -- Otherwise, run the current file
   local file = vim.fn.expand('%')
   local ft = vim.bo.filetype
   local cmd
@@ -518,7 +530,7 @@ vim.keymap.set('n', '<leader>r', function()
     return
   end
   vim.cmd('botright split | terminal ' .. cmd)
-end, { desc = 'Run current file (Python/C)' })
+end, { desc = 'Toggle run current file (Python/C)' })
 vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeToggle<cr>', { desc = 'Toggle File Explorer' })
 -- Live grep with accent-insensitive search
 vim.keymap.set('n', '<C-f>', function()
