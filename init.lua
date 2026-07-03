@@ -311,6 +311,90 @@ require("lazy").setup({
           end
         end,
       })
+
+      -- Custom source: list files in the nearest "sounds/" dir (walks up
+      -- from the buffer, since .edit.yaml files reference "sounds/..."
+      -- relative to the project root, not to their own folder)
+      local function find_dir_upwards(start_dir, target_name)
+        local dir = start_dir
+        for _ = 1, 20 do
+          if vim.fn.isdirectory(dir .. '/' .. target_name) == 1 then
+            return dir .. '/' .. target_name
+          end
+          local parent = vim.fn.fnamemodify(dir, ':h')
+          if parent == dir then break end
+          dir = parent
+        end
+        return nil
+      end
+
+      local sounds_path_source = {}
+      sounds_path_source.new = function()
+        return setmetatable({}, { __index = sounds_path_source })
+      end
+
+      function sounds_path_source:get_trigger_characters()
+        return { '/' }
+      end
+
+      function sounds_path_source:get_keyword_pattern()
+        return [[\k\+]]
+      end
+
+      function sounds_path_source:complete(params, callback)
+        local line = params.context.cursor_before_line
+        if not line:match('sounds/$') then
+          callback({ items = {}, isIncomplete = false })
+          return
+        end
+
+        local sounds_dir = find_dir_upwards(vim.fn.expand('%:p:h'), 'sounds')
+        if not sounds_dir then
+          callback({ items = {}, isIncomplete = false })
+          return
+        end
+
+        local files = vim.fn.readdir(sounds_dir)
+        table.sort(files)
+        local items = {}
+        for _, file in ipairs(files) do
+          table.insert(items, {
+            label = file,
+            kind = 17, -- File
+            insertText = file,
+          })
+        end
+
+        callback({ items = items, isIncomplete = false })
+      end
+
+      cmp.register_source('sounds_path', sounds_path_source.new())
+
+      -- YAML: use the sounds path source (plus normal path/buffer)
+      cmp.setup.filetype('yaml', {
+        sources = cmp.config.sources({
+          { name = 'sounds_path' },
+          { name = 'path' },
+          { name = 'buffer' },
+        }),
+      })
+
+      -- Auto-trigger completion after typing "/" right after "sounds" in yaml
+      vim.api.nvim_create_autocmd("InsertCharPre", {
+        pattern = "*.yaml",
+        callback = function()
+          if vim.v.char == '/' then
+            vim.defer_fn(function()
+              local line = vim.api.nvim_get_current_line()
+              local col = vim.api.nvim_win_get_cursor(0)[2]
+              local before_cursor = line:sub(1, col + 1)
+              if before_cursor:match('sounds/$') then
+                require('cmp').complete()
+              end
+            end, 10)
+          end
+        end,
+      })
     end,
   },
   
